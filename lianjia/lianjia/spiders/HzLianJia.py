@@ -54,8 +54,10 @@ class HzLianJia(CrawlSpider):
                 url = url_search.group(1)
                 sub_match = pattern_subway.search(content)
                 deal_date_match = pattern_deal_date.search(content)
-                items["subway"] = sub_match.group(1)
-                items["deal_date"] = deal_date_match.group(1)
+                if sub_match:
+                    items["subway"] = sub_match.group(1)
+                if deal_date_match:
+                    items["deal_date"] = deal_date_match.group(1)
                 yield Request(url=url, meta={"item": items}, callback=self.parse_third)
         page_content = selector.xpath("//div[@class='page-box house-lst-page-box']").extract()
         if page_content is not None and items["plies"] == 1:
@@ -68,25 +70,28 @@ class HzLianJia(CrawlSpider):
     def parse_third(self, response):
         url = response.url
         items = response.meta["item"]
-        items["href"] = url  # 链接
-        name = Field()  # 名称
-        style = Field()  # 房屋户型
-        area = Field()  # 面积
-        orientation = Field()  # 房屋朝向
-        decoration_situation = Field()  # 装修情况
-        floor = Field()  # 楼层
-        year = Field()  # 年份
-        sign_time = Field()  # 注册时间
-        unit_price = Field()  # 单价
-        total_price_first = Field()  # 总价1爬取的价格
-        total_price_second = Field()  # 总价2=area*unit_price
-        house_property = Field()  # 房产类关于房产时间的
-        school = Field()  # 学校
-        subway = Field()  # 地铁
-        elevator = Field()  # 电梯
-        deal_time = Field()  # 成交周期
-        quote_time = Field()  # 挂牌时间
-        housing_use = Field()  # 房屋用途
-        owner_ship = Field()  # 产权所属
-        owner_time = Field()  # 产权年限
-        deal_ship = Field()  # 交易权属
+        selector = Selector(response)
+        items["href"] = url
+        items["name"] = selector.xpath("//div[@class='wrapper']/text()").extract()
+        items["style"] = selector.xpath('//*[@id="introduction"]/div/div[1]/div[2]/ul/li[1]/text()').extract()
+        items["area"] = selector.xpath('//*[@id="introduction"]/div/div[1]/div[2]/ul/li[3]/text()').extract()
+        items["orientation"] = selector.xpath('//*[@id="introduction"]/div/div[1]/div[2]/ul/li[7]/text()').extract()
+        items["decoration_situation"] = selector.xpath(
+            '//*[@id="introduction"]/div/div[1]/div[2]/ul/li[9]/text()').extract()
+        items["floor"] = selector.xpath('//*[@id="introduction"]/div/div[1]/div[2]/ul/li[2]/text()').extract()  # 楼层
+        items["year"] = selector.xpath('//*[@id="introduction"]/div/div[1]/div[2]/ul/li[8]/text()').extract()  # 年份
+        items["unit_price"] = selector.xpath('//div[@class="price"]/b/text()').extract()  # 单价
+        items["total_price_first"] = selector.xpath('//span[@class="dealTotalPrice"]/i/text()').extract()  # 总价1爬取的价格
+        items["total_price_second"] = items["unit_price"] * items["area"]  # 总价2=area*unit_price
+        items["elevator"] = selector.xpath('//*[@id="introduction"]/div/div[1]/div[2]/ul/li[14]/text()').extract()  # 电梯
+        items["deal_time"] = selector.xpath('//div[@class="msg"]/span[2]/label/text()').extract()  # 成交周期
+        items["quote_time"] = selector.xpath(
+            '//*[@id="introduction"]/div/div[2]/div[2]/ul/li[3]/text()').extract()  # 挂牌时间
+        items["housing_use"] = selector.xpath(
+            '//*[@id="introduction"]/div/div[2]/div[2]/ul/li[4]/text()').extract()  # 房屋用途
+        items["owner_ship"] = selector.xpath(
+            '//*[@id="introduction"]/div/div[2]/div[2]/ul/li[6]/text()').extract()  # 产权所属
+        items["owner_time"] = selector.xpath(
+            '//*[@id="introduction"]/div/div[1]/div[2]/ul/li[13]/text()').extract()  # 产权年限
+        items["deal_ship"] = selector.xpath(
+            '//*[@id="introduction"]/div/div[2]/div[2]/ul/li[2]/text()').extract()  # 交易权属

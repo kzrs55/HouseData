@@ -23,12 +23,9 @@ class LianjiaItem(scrapy.Item):
     decoration_situation = Field()  # 装修情况
     floor = Field()  # 楼层
     year = Field()  # 年份
-    sign_time = Field()  # 注册时间
     unit_price = Field()  # 单价
     total_price_first = Field()  # 总价1爬取的价格
     total_price_second = Field()  # 总价2=area*unit_price
-    house_property = Field()  # 房产类关于房产时间的
-    school = Field()  # 学校
     subway = Field()  # 地铁
     elevator = Field()  # 电梯
     deal_time = Field()  # 成交周期
