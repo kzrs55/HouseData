@@ -24,8 +24,7 @@ class LianjiaItem(scrapy.Item):
     floor = Field()  # 楼层
     year = Field()  # 年份
     unit_price = Field()  # 单价
-    total_price_first = Field()  # 总价1爬取的价格
-    total_price_second = Field()  # 总价2=area*unit_price
+    total_price = Field()  # 总价1爬取的价格
     subway = Field()  # 地铁
     elevator = Field()  # 电梯
     deal_time = Field()  # 成交周期
